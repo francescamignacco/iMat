@@ -73,7 +73,8 @@ print(predictors.var())
 
 print(predictors.max(axis=0,skipna=False,numeric_only=True))
 print(predictors.min(axis=0,skipna=False,numeric_only=True))
-#vediamo che la colonna SiOSi_var h
+print(predictors.max(axis=0,skipna=False,numeric_only=True)/predictors.min(axis=0,skipna=False,numeric_only=True))
+#vediamo che alcune
 
 #predictors.replace(',','.')
 #predictors['density'] = predictors['density'].astype('float') #per cambiare type
