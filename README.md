@@ -18,4 +18,8 @@ Attempt 1: file input iza per trovare proprtietà meccaniche zeoliti
   
   
   
+  Appunti sul paper ML2
+Loro hanno voluto usare input puramente geometrici
+  
+  
   
