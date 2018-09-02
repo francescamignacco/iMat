@@ -6,6 +6,9 @@ from sklearn.preprocessing import Imputer
 from keras.layers import Dense
 from keras.models import Sequential
 from keras.callbacks import EarlyStopping
+from sklearn.model_selection import RepeatedKFold
+from sklearn.model_selection import cross_val_score
+from sklearn import svm
 #import matplotlib.pyplot as plt
 
 #IMPORTING DATAS
@@ -43,9 +46,9 @@ writer1.save()
 
 predictors_colonne=predictors.loc[:,['ASA','NASA']]
 
-writer3 = pd.ExcelWriter('predictors_colonne.xlsx')
-predictors_colonne.to_excel(writer3, 'predictors_colonne')
-writer3.save()
+writer2 = pd.ExcelWriter('predictors_colonne.xlsx')
+predictors_colonne.to_excel(writer2, 'predictors_colonne')
+writer2.save()
 
 predictors['ASA'].replace(0, numpy.nan, inplace=True)
 #devo capire perchè non funziona il comando, perchè le colonne le seleziona, puoi vederlo in predictors_colonne di excel
@@ -64,17 +67,35 @@ predictors = imp.transform(predictors)
 
 predictors = pd.DataFrame(data=predictors, columns=index)
 
+predictors['SiOSi_var']=pd.DataFrame(numpy.log(predictors['SiOSi_var']))
+predictors['ASA']=pd.DataFrame(numpy.log(predictors['ASA']))
+predictors['NASA']=pd.DataFrame(numpy.log(predictors['NASA']))
 
-writer2 = pd.ExcelWriter('Predictors_new.xlsx')
-predictors.to_excel(writer2, 'predictors_excel')
-writer2.save()
+#da verificare cosa sto facendo esattamente con questa roba
+scaler=StandardScaler()
+predictors_scaled=scaler.fit_transform(predictors)
+predictors_scaled=pd.DataFrame(data=predictors_scaled, columns=index)
+
+writer3 = pd.ExcelWriter('Predictors_new.xlsx')
+predictors.to_excel(writer3, 'predictors_excel')
+writer3.save()
 
 print(predictors.var())
 
-print(predictors.max(axis=0,skipna=False,numeric_only=True))
-print(predictors.min(axis=0,skipna=False,numeric_only=True))
-print(predictors.max(axis=0,skipna=False,numeric_only=True)/predictors.min(axis=0,skipna=False,numeric_only=True))
-#vediamo che alcune
+#print(predictors.max(axis=0,skipna=False,numeric_only=True))
+#print(predictors.min(axis=0,skipna=False,numeric_only=True))
+#print(predictors.max(axis=0,skipna=False,numeric_only=True)/predictors.min(axis=0,skipna=False,numeric_only=True))
+
+stat=predictors.describe()
+print(stat)
+writer4 = pd.ExcelWriter('Predictors_stat.xlsx')
+stat.to_excel(writer4, 'predictors_stat')
+writer4.save()
+
+
+#vediamo che alcune colonne hanno magari varianza quasi normale ma hanno dei valori completamente out of range
+#cercare in letteratura come pulirli con metodi statistici automatici
+
 
 #predictors.replace(',','.')
 #predictors['density'] = predictors['density'].astype('float') #per cambiare type
@@ -97,4 +118,16 @@ Early_Stopping_Monitor = EarlyStopping(patience=3)
 #model.compile(optimizer="adam", loss="mean_squared_error", metrics=['accuracy'])
 model.compile(optimizer="adam", loss="mean_squared_error")
 #model.fit(predictors, target, validation_split=0.3, epochs=20, callbacks=[Early_Stopping_Monitor])
-model.fit(predictors, target, validation_split=0.3, epochs=2)
+model.fit(predictors, target, validation_split=0.3, epochs=20)
+#a=[0.3,0.2,0.23,0.24,0.27,0.25,0.29,0.26,0.21]
+#for num in a:
+#    model.fit(predictors, target, validation_split=num, epochs=1)
+
+#random_state=15475
+#rkf=RepeatedKFold(n_splits=5, n_repeats=5, random_state=random_state)
+#for num in rkf.split(predictors,target):
+    #model.fit(num, target, epochs=2)
+   # a=1
+#regression=svm.LinearSVR()
+#score=cross_val_score(regression,predictors,target,cv=10)
+#print(score)
