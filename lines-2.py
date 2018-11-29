@@ -58,8 +58,7 @@ def check(lines):
             break
     return text
 
-#da aggiungere : togli tutto dopo references, rimpiazza le parole con una funzione
-#togliere tutto dopo References
+
 #togliere le didascalie delle figure (lo vogliamo veramente?)
 
 #read all the filenames in the folder
